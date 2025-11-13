@@ -18,8 +18,8 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { LoaderIcon, OctagonAlertIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
 
 const SignInView = () => {
   const [error, setError] = useState<string | null>(null);
@@ -42,11 +42,12 @@ const SignInView = () => {
       {
         email: data.email,
         password: data.password,
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
-          setIsPending(false);
           router.push("/");
+          setIsPending(false);
         },
         onError: ({ error }) => {
           setIsPending(false);
@@ -55,6 +56,27 @@ const SignInView = () => {
       }
     );
   };
+
+  // const onSocial = async (provider: "google" | "github") => {
+  //   setError(null);
+  //   setIsPending(true);
+
+  //   await authClient.signIn.social(
+  //     {
+  //       provider,
+  //       callbackURL: "/",
+  //     },
+  //     {
+  //       onSuccess: () => {
+  //         setIsPending(false);
+  //       },
+  //       onError: ({ error }) => {
+  //         setIsPending(false);
+  //         setError(error.message);
+  //       },
+  //     }
+  //   );
+  // };
   return (
     <div className="flex flex-col gap-6">
       <Card className="p-0 overflow-hidden">
@@ -125,20 +147,30 @@ const SignInView = () => {
                   {isPending ? "Please wait" : "Sign in"}
                 </Button>
 
-                <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                {/* <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                   <span className="bg-card text-muted-foreground z-10 px-2 relative">
                     Or continue with
                   </span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button type="button" variant="outline" className="w-full">
+                  <Button
+                    type="button"
+                    onClick={() => onSocial("google")}
+                    variant="outline"
+                    className="w-full"
+                  >
                     Google
                   </Button>
-                  <Button type="button" variant="outline" className="w-full">
+                  <Button
+                    type="button"
+                    onClick={() => onSocial("github")}
+                    variant="outline"
+                    className="w-full"
+                  >
                     Github
                   </Button>
-                </div>
+                </div> */}
 
                 <div className="text-center text-sm">
                   Don&apos;t have an account?{" "}
