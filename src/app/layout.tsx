@@ -3,6 +3,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Poppins } from "next/font/google";
 import { TRPCReactProvider } from "@/trpc/client";
+import { Toaster } from "@/components/ui/sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <TRPCReactProvider>
       <html lang="en">
-        <body className={cn("antialiased", poppins.className)}>{children}</body>
+        <body className={cn("antialiased", poppins.className)}>
+          {children}
+          <Toaster />
+        </body>
       </html>
     </TRPCReactProvider>
   );
