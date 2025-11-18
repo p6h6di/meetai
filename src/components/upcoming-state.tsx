@@ -5,14 +5,13 @@ import Link from "next/link";
 
 interface Props {
   meetingId: string;
-  onCancelMeeting: () => void;
-  isCancelling: boolean;
+  // onCancelMeeting: () => void;
+  // isCancelling: boolean;
 }
 
 export const UpcomingState = ({
-  isCancelling,
+  // isCancelling,
   meetingId,
-  onCancelMeeting,
 }: Props) => {
   return (
     <div className="bg-white rounded-lg px-4 py-5 flex flex-col gap-y-8 items-center justify-center">
@@ -22,7 +21,7 @@ export const UpcomingState = ({
         description="Once you start this meeting, a summary will appear here"
       />
       <div className="flex flex-col-reverse lg:flex-row lg:justify-center items-center gap-2 w-full">
-        <Button
+        {/* <Button
           variant="secondary"
           onClick={onCancelMeeting}
           disabled={isCancelling}
@@ -30,8 +29,8 @@ export const UpcomingState = ({
         >
           <BanIcon />
           Cancel meeting
-        </Button>
-        <Button disabled={isCancelling} className="w-full lg:w-auto" asChild>
+        </Button> */}
+        <Button className="w-full lg:w-auto" asChild>
           <Link href={`/call/${meetingId}`}>
             <VideoIcon />
             Start meeting
