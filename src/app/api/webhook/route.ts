@@ -19,6 +19,9 @@ import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 const openaiClient = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
+// Add this Set to track processed messages and prevent duplicates
+const processedMessages = new Set<string>();
+
 function verifySignatureWithSDK(body: string, signature: string): boolean {
   return streamVideo.verifyWebhook(body, signature);
 }
@@ -199,10 +202,25 @@ export async function POST(req: NextRequest) {
     const senderId = event.message?.user?.id;
     const channelId = event.channel_id;
     const text = event.message?.text;
+    const messageId = event.message?.id;
 
-    if (!senderId || !channelId || !text) {
+    if (!senderId || !channelId || !text || !messageId) {
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
     }
+
+    // Check if we've already processed this message
+    if (processedMessages.has(messageId)) {
+      console.log(`Skipping duplicate message: ${messageId}`);
+      return NextResponse.json({ status: "duplicate-ignored" });
+    }
+
+    // Mark this message as processed
+    processedMessages.add(messageId);
+
+    // Clean up old message IDs after 5 minutes to prevent memory leak
+    setTimeout(() => {
+      processedMessages.delete(messageId);
+    }, 5 * 60 * 1000);
 
     const [existingMeeting] = await db
       .select()
@@ -233,11 +251,11 @@ You MUST follow these rules strictly:
 
 1. You may ONLY answer questions that are directly related to:
    - The meeting summary below
-   - The agent’s original instructions below
+   - The agent's original instructions below
 
 2. If the user asks ANYTHING that is unrelated, off-topic, personal, or outside the scope of the meeting or instructions, you MUST politely decline.  
    Example response:
-   "I’m sorry, but I can only answer questions related to the meeting or its details."
+   "I'm sorry, but I can only answer questions related to the meeting or its details."
 
 3. Always be polite, concise, and fact-based.  
 4. If the meeting summary does not contain enough information to answer, say so politely.
@@ -301,7 +319,6 @@ ${existingAgent.instructions}
       },
     });
   }
-
 
   return NextResponse.json({
     status: "ok",

@@ -53,6 +53,7 @@ const ChatUI = ({
     if (!client) return;
 
     let isMounted = true;
+    let channelInstance: StreamChannel | null = null;
 
     const init = async () => {
       const ch = client.channel("messaging", meetingId, {
@@ -61,17 +62,25 @@ const ChatUI = ({
 
       await ch.watch();
 
-      if (isMounted) setChannel(ch);
+      if (isMounted) {
+        channelInstance = ch;
+        setChannel(ch);
+      }
     };
 
     init();
 
     return () => {
       isMounted = false;
-
-      if (channel) channel.stopWatching();
+      
+      // Only stop watching when component unmounts, not on every re-render
+      if (channelInstance) {
+        channelInstance.stopWatching().catch(() => {
+          // Silently handle errors during cleanup
+        });
+      }
     };
-  }, [client, meetingId, userId]);
+  }, [client, meetingId, userId]); // Removed 'channel' from dependencies
 
   if (!client || !channel) {
     return (
